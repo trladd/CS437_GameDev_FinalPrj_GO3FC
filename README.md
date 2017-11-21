@@ -1,10 +1,11 @@
 # CS437_GameDev_FinalPrj_GO3FC
-Final project repository for CS437
+<h1>Final project repository for CS437</h1>
 
-Project Members:
-	Trevar Ladd
-	Madelyn O'Dell
-	Ernie Yarbrough
-	Jaclyn Schmitz
-	
-Communication Means: Group text message
+<h3>Project Members:</h3>
+<ul>
+	<li>Trevar Ladd</li>
+	<li>Madelyn O'Dell</li>
+	<li>Ernie Yarbrough</li>
+	<li>Jaclyn Schmitz</li>
+</ul>
+<b>Communication Means:</b> Group text message
