@@ -5,3 +5,6 @@ Project Members:
 	Trevar Ladd
 	Madelyn O'Dell
 	Ernie Yarbrough
+	Jaclyn Schmitz
+	
+Communication Means: Group text message
