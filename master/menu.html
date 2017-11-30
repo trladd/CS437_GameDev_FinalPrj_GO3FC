@@ -89,6 +89,8 @@
 			*/
 			//ADD$GAMES$HERE
 
+			//["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
+			//"RunningMan", "VirtualDDR"
 
 			function runMiniGame(gameName, conn, miniGameResult) {
 				console.log("Searching to link game: " + gameName);
@@ -104,6 +106,30 @@
 						break;
 					case "Game":
 						newGame = new MiniGameName(conn, playerNumber);
+						miniGameResult = newGame.runGame();
+						break;
+					case "CompBlock":
+						newGame = new CompBlock(conn, playerNumber);
+						miniGameResult = newGame.runGame();
+						break;
+					case "MiniGolf":
+						newGame = new MiniGolf(conn, playerNumber);
+						miniGameResult = newGame.runGame();
+						break;
+					case "MonsterBattle":
+						newGame = new MonsterBattle(conn, playerNumber);
+						miniGameResult = newGame.runGame();
+						break;
+					case "PastryPanic":
+						newGame = new PastryPanic(conn, playerNumber);
+						miniGameResult = newGame.runGame();
+						break;
+					case "RunningMan":
+						newGame = new RunningMan(conn, playerNumber);
+						miniGameResult = newGame.runGame();
+						break;
+					case "VirtualDDR":
+						newGame = new VirtualDDR(conn, playerNumber);
 						miniGameResult = newGame.runGame();
 						break;
 				}
@@ -167,7 +193,7 @@
 					conn.on('data', function (data) {
 						console.log("Received Data: ");
 						$("#startGame").slideDown();
-						
+
 						$("#startGame").click(function () {
 							$("#startGame").slideUp();
 							conn.send("Let's play");
@@ -219,7 +245,9 @@
 			}
 
 			function runGameAsGuest(miniGame, connect) {
-				var miniGames = ["TicTacToe", "Pong", "Game"];
+				var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
+					"RunningMan", "VirtualDDR"
+				];
 				if (miniGame == -1) {
 					conn.on('data', function (data) {
 						console.log('Now Listening for Results Data: ', data);
@@ -232,7 +260,9 @@
 			}
 
 			function runGameAsHost(numberRounds, conn) {
-				var miniGames = ["TicTacToe", "Pong", "Game"];
+				var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
+					"RunningMan", "VirtualDDR"
+				];
 				var miniGameResults = new Array(miniGames.length);
 				for (i = 0; i < miniGames.length; i++) {
 					miniGameResults[i] = new GameResult(0, 0, "");
@@ -299,7 +329,8 @@
 	</div>
 	<div id="waitingPeers">
 		<h2>Waiting for Peer</h2>
-		<p>You have started a session but no peers have joined. When they join you will be notified and will be able to start the game via a button click.</p>
+		<p>You have started a session but no peers have joined. When they join you will be notified and will be able to start the
+			game via a button click.</p>
 	</div>
 	<button id="startGame">Another player has joined. Click here to start the game.</button>
 	<div id="gameTable">
