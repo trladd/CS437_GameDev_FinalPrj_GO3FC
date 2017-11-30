@@ -23,6 +23,10 @@
 
 	<script type="text/javascript">
 		$(document).ready(function () {
+			$("#startGame").hide();
+			$("#pleaseWait").hide();
+			$("#waitingPeers").hide();
+
 
 			//Define click events for clicking button to join Game
 			$("#nzupjvjyjnx3l3di1").click(function () {
@@ -124,6 +128,8 @@
 				});
 				conn = peer.connect(apiKey);
 				conn.on("open", function () {
+					$("#pleaseWait").slideDown();
+					$("#gameTable").slideUp();
 					console.log("Initiated Connection");
 					conn.send("I'm here and ready to play now");
 					this.connection = conn;
@@ -131,6 +137,7 @@
 					playerNumber = 2;
 					conn.on('data', function (data) {
 						conn.send("Player 2 Listener received message to run game");
+						$("#pleaseWait").slideUp();
 						runGameAsGuest(data, this.connection);
 					});
 
@@ -143,6 +150,8 @@
 			}
 
 			function createRoom(apiKey) {
+				$("#gameTable").slideUp();
+				$("#waitingPeers").slideDown();
 				console.log("Creating room " + apiKey);
 				var timeOut;
 
@@ -152,9 +161,15 @@
 				console.log("Waiting for connection");
 				peer.on("connection", function (conn) {
 					conn.on('data', function (data) {
-						console.log("Received Data: " + data + "\nSending: Let's Play");
-						conn.send("Let's play");
-						runGameAsHost(3, conn);
+						console.log("Received Data: ");
+						$("#startGame").slideDown();
+						
+						$("#startGame").click(function () {
+							$("#startGame").slideUp();
+							conn.send("Let's play");
+							runGameAsHost(3, conn);
+						});
+
 					});
 					playerNumber = 1;
 					console.log("Received Connection");
@@ -166,10 +181,9 @@
 
 			function displayResults(miniGameResults) {
 				console.log("GAME OVER!");
-				var outString = "Results\nGame Name, Player 1 Score, Player 2 Score, Winner";
+				var outString = "End of Game Summary\n";
 				for (i = 0; i < miniGameResults.length; i++) {
-					outString += ("\n" + miniGameResults[i].getGameName() + ", " + miniGameResults[i].getPlayerOneScore() + "," +
-						miniGameResults[i].getPlayerTwoScore() + ", " + miniGameResults[i].getWinner());
+					outString += miniGameResults.toString();
 				}
 				alert(outString);
 			}
@@ -207,7 +221,7 @@
 						console.log('Now Listening for Results Data: ', data);
 						displayResults(data);
 					});
-					
+
 				} else {
 					runMiniGame(miniGames[miniGame], connect);
 				}
@@ -242,7 +256,9 @@
 					}
 				}
 				conn.send(-1);
-				setTimeout(function(){conn.send(miniGameResults);},5000);
+				setTimeout(function () {
+					conn.send(miniGameResults);
+				}, 5000);
 				displayResults(miniGameResults);
 
 			}
@@ -273,6 +289,15 @@
 
 <body>
 	<h1>Game Lobby ----- USE MELON JS</h1>
+	<div id="pleaseWait">
+		<h2>Please Wait!</h2>
+		<p>The host of this game has been notified of your arrival and the game will start when they choose</p>
+	</div>
+	<div id="waitingPeers">
+		<h2>Waiting for Peer</h2>
+		<p>You have started a session but no peers have joined. When they join you will be notified and will be able to start the game via a button click.</p>
+	</div>
+	<button id="startGame">Another player has joined. Click here to start the game.</button>
 	<div id="gameTable">
 		<table>
 			<tr>

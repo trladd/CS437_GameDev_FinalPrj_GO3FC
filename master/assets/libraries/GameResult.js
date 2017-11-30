@@ -23,58 +23,69 @@
  * addPlayerTwoScore(addition)
  */
 
- function GameResult(p1score, p2score, name){
-     this.playerOneScore = p1score;
-     this.playerTwoScore = p2score;
-     this.gameName = name;
-     this.winner = -1;
+function GameResult(p1score, p2score, name) {
+    this.playerOneScore = p1score;
+    this.playerTwoScore = p2score;
+    this.gameName = name;
+    this.winner = -1;
 
-     this.setValues = function(p1score, p2score, name, winner){
+    this.setValues = function (p1score, p2score, name, winner) {
         this.playerOneScore = p1score;
         this.playerTwoScore = p2score;
         this.gameName = name;
         this.winner = winner;
-     }
+    }
 
-     this.getPlayerOneScore = function(){
-         return this.playerOneScore;
-     }
+    this.getPlayerOneScore = function () {
+        return this.playerOneScore;
+    }
 
-     this.getPlayerTwoScore = function(){
-         return this.playerTwoScore;
-     }
+    this.getPlayerTwoScore = function () {
+        return this.playerTwoScore;
+    }
 
-     this.getGameName = function(){
-         return this.gameName;
-     }
+    this.getGameName = function () {
+        return this.gameName;
+    }
 
-     this.getWinner = function(){
-         return this.winner;
-     }
+    this.getWinner = function () {
+        return this.winner;
+    }
 
-     this.setGameName = function(newName){
-         this.gameName = newName;
-     }
+    this.setGameName = function (newName) {
+        this.gameName = newName;
+    }
 
-     this.setWinner = function(newWinner){
-         this.winner = newWinner;
-     }
+    this.setWinner = function (newWinner) {
+        this.winner = newWinner;
+    }
 
-     this.setPlayerOneScore = function(newScore){
-         this.playerOneScore = newScore;
-     }
+    this.setPlayerOneScore = function (newScore) {
+        this.playerOneScore = newScore;
+    }
 
-     this.addPlayerOneScore = function(addition){
-         this.playerOneScore += addition;
-     }
+    this.addPlayerOneScore = function (addition) {
+        this.playerOneScore += addition;
+    }
 
-     this.setPlayerTwoScore = function(newScore){
-         this.playerTwoScore = newScore;
-     }
+    this.setPlayerTwoScore = function (newScore) {
+        this.playerTwoScore = newScore;
+    }
 
-     this.addPlayerTwoScore = function(addition){
-         this.playerTwoScore = addition
-     }
+    this.addPlayerTwoScore = function (addition) {
+        this.playerTwoScore += addition;
+    }
+
+    this.toString = function () {
+        var outputStr = "";
+        outputStr += "---------------------\n";
+        outputStr += ("Game: " + this.gameName + "\n");
+        outputStr += ("Player 1: " + this.p1score + "\n");
+        outputStr += ("Player 2: " + this.p2score + "\n");
+        outputStr += ("Winner: Player " + this.winner + "\n");
+        outputStr += "\n";
+        return outputStr;
+    }
 
 
- }
+}

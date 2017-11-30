@@ -47,7 +47,6 @@
     this.resetDataRead = function(){
         this.conn.on('data', function (data) {
             console.log("Received data as: " + data);
-            
         });
     }
 
@@ -58,6 +57,7 @@
         }
         console.log("Ending Game " + this.gameName);
         this.resetDataRead();
+        this.gameResults.setPlayerOneScore(76);
         return this.gameResults;
     }
  }
