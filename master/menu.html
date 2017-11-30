@@ -111,6 +111,8 @@
 			create the room rather than try to join. This would be rather easy to implement
 			*/
 			function joinRoom(apiKey) {
+				this.connection;
+
 				console.log("Attempting to join room " + apiKey);
 				var connectedRoom = false;
 				peer = new Peer({
@@ -121,21 +123,15 @@
 					pid = id;
 				});
 				conn = peer.connect(apiKey);
-				setTimeout(function () {
-					conn = peer.connect(apiKey);
-					if (connectedRoom == false) {
-						//console.log("Unable to find matching peer. Will now act as host and create session");
-						//createRoom(apiKey);
-					}
-
-				}, 2000);
 				conn.on("open", function () {
 					console.log("Initiated Connection");
 					conn.send("I'm here and ready to play now");
+					this.connection = conn;
 					connected = true;
 					playerNumber = 2;
 					conn.on('data', function (data) {
-						runGameAsGuest(data, conn);
+						conn.send("Player 2 Listener received message to run game");
+						runGameAsGuest(data, this.connection);
 					});
 
 				});
@@ -159,13 +155,9 @@
 						console.log("Received Data: " + data + "\nSending: Let's Play");
 						conn.send("Let's play");
 						runGameAsHost(3, conn);
-
 					});
 					playerNumber = 1;
 					console.log("Received Connection");
-					var verifyData = "unverified";
-
-
 				});
 
 			}
@@ -192,9 +184,9 @@
 					while (validGame == false) {
 						if (miniGames[chosenGame] != "USEDGAME") {
 							validGame = true;
-							
+
 						} else {
-							
+
 							if (chosenGame >= miniGames.length) {
 								chosenGame = 0;
 							} else if (chosenGame = initialChosen) {
@@ -204,16 +196,20 @@
 						}
 					}
 				}
-				console.log("Chose Game Number: "+chosenGame);
+				console.log("Chose Game Number: " + chosenGame);
 				return chosenGame;
 			}
 
-			function runGameAsGuest(miniGame, conn) {
+			function runGameAsGuest(miniGame, connect) {
 				var miniGames = ["Game", "Game", "Game"];
 				if (miniGame == -1) {
-					displayResults();
+					conn.on('data', function (data) {
+						console.log('Now Listening for Results Data: ', data);
+						displayResults(data);
+					});
+					
 				} else {
-					runMiniGame(miniGames[miniGame], conn);
+					runMiniGame(miniGames[miniGame], connect);
 				}
 			}
 
@@ -229,21 +225,24 @@
 				var maxRounds = miniGames.length;
 				var keepGoing = true;
 				var chosenGame = 0;
-				for (i = 0; i < maxRounds; i++) {
+				for (i = 0; i < numberRounds; i++) {
 					console.log("Running Game Controller as host Round: " + i);
 					chosenGame = determineGame(miniGames)
-					
-					
+
+
 					if (chosenGame != -1) {
 						console.log("Sharing chosen game with peer");
 						conn.send(chosenGame);
 						miniGameResults[i] = runMiniGame(miniGames[chosenGame], conn);
 						miniGames[chosenGame] = "USEDGAME";
+					} else if (i >= maxRounds) {
+						i += 100;
 					} else {
-						break;
+						i += 100;
 					}
 				}
 				conn.send(-1);
+				setTimeout(function(){conn.send(miniGameResults);},5000);
 				displayResults(miniGameResults);
 
 			}
