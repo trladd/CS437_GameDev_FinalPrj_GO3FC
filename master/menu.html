@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="apple-touch-icon" href="" />
+	<link rel="apple-touch-startup-image" href="">
+	<meta name="apple-mobile-web-app-title" content="Game Party">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	<title>Game Party</title>
+
+
+	<!--INCLUDE ANY LIBRARIES HERE SO THAT THEY CAN BE LOADED AT FIRST, THEN SHARED -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
+	<script type="text/javascript" src="assets/libraries/GameResult.js"></script>
+
+	<!--INCLUDE GAMES HERE -->
+	<script type "text/javascript" src="games/game/game.js"></script>
+
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+			//Define click events for clicking button to join Game
+			$("#nzupjvjyjnx3l3di1").click(function () {
+				createRoom("nzupjvjyjnx3l3di");
+			});
+			$("#qtel6mk2t1chm2t91").click(function () {
+				createRoom("qtel6mk2t1chm2t9");
+			});
+			$("#fq6a4niiuzkhuxr1").click(function () {
+				createRoom("fq6a4niiuzkhuxr");
+			});
+			$("#jml9r8bsz1714i1").click(function () {
+				createRoom("jml9r8bsz1714i");
+			});
+			$("#fuszgluehi8p8pvi1").click(function () {
+				createRoom("fuszgluehi8p8pvi");
+			});
+			$("#dvy4sjbvks79o1or1").click(function () {
+				createRoom("dvy4sjbvks79o1or");
+			});
+			$("#gx8uncxet3s1yvi1").click(function () {
+				createRoom("gx8uncxet3s1yvi");
+			});
+			$("#l0wew8sguzo205291").click(function () {
+				createRoom("l0wew8sguzo20529");
+			});
+			$("#nzupjvjyjnx3l3di2").click(function () {
+				joinRoom("nzupjvjyjnx3l3di");
+			});
+			$("#qtel6mk2t1chm2t92").click(function () {
+				joinRoom("qtel6mk2t1chm2t9");
+			});
+			$("#fq6a4niiuzkhuxr2").click(function () {
+				joinRoom("fq6a4niiuzkhuxr");
+			});
+			$("#jml9r8bsz1714i2").click(function () {
+				joinRoom("jml9r8bsz1714i");
+			});
+			$("#fuszgluehi8p8pvi2").click(function () {
+				joinRoom("fuszgluehi8p8pvi");
+			});
+			$("#dvy4sjbvks79o1or2").click(function () {
+				joinRoom("dvy4sjbvks79o1or");
+			});
+			$("#gx8uncxet3s1yvi2").click(function () {
+				joinRoom("gx8uncxet3s1yvi");
+			});
+			$("#l0wew8sguzo205292").click(function () {
+				joinRoom("l0wew8sguzo20529");
+			});
+
+			//Define all games
+			/*To add a new game to this game controller....
+			-Add the game to the miniGames array
+			-Add under runGame the switchCase Statement
+				-create the game object and trigger the games main method
+				-save return data via the function "saveGameState"
+			*/
+			//ADD$GAMES$HERE
+
+
+			function runMiniGame(gameName, conn, miniGameResult) {
+				console.log("Searching to link game: " + gameName);
+				miniGameResult = new GameResult(0, 0, "");
+				switch (gameName) {
+					case "TicTacToe":
+
+						break;
+					case "Pong":
+
+						break;
+					case "Game":
+						newGame = new MiniGameName(conn, playerNumber);
+						miniGameResult = newGame.runGame();
+						break;
+				}
+				return miniGameResult;
+			}
+
+
+
+
+			/*
+			The way to fix this would be to keep a timestamp variable as a timeout variable. Say 
+			that IF a connection is not made via the conn.on.open within 5 seconds, it will simply 
+			create the room rather than try to join. This would be rather easy to implement
+			*/
+			function joinRoom(apiKey) {
+				console.log("Attempting to join room " + apiKey);
+				var connectedRoom = false;
+				peer = new Peer({
+					key: apiKey
+				});
+
+				peer.on("open", function (id) {
+					pid = id;
+				});
+				conn = peer.connect(apiKey);
+				setTimeout(function () {
+					conn = peer.connect(apiKey);
+					if (connectedRoom == false) {
+						//console.log("Unable to find matching peer. Will now act as host and create session");
+						//createRoom(apiKey);
+					}
+
+				}, 2000);
+				conn.on("open", function () {
+					console.log("Initiated Connection");
+					conn.send("I'm here and ready to play now");
+					connected = true;
+					playerNumber = 2;
+					conn.on('data', function (data) {
+						runGameAsGuest(data, conn);
+					});
+
+				});
+
+				conn.on('data', function (data) {
+					console.log("Received Data: " + data);
+				});
+
+			}
+
+			function createRoom(apiKey) {
+				console.log("Creating room " + apiKey);
+				var timeOut;
+
+				peer = new Peer(apiKey, {
+					key: apiKey
+				});
+				console.log("Waiting for connection");
+				peer.on("connection", function (conn) {
+					conn.on('data', function (data) {
+						console.log("Received Data: " + data + "\nSending: Let's Play");
+						conn.send("Let's play");
+						runGameAsHost(3, conn);
+
+					});
+					playerNumber = 1;
+					console.log("Received Connection");
+					var verifyData = "unverified";
+
+
+				});
+
+			}
+
+
+
+			function displayResults(miniGameResults) {
+				console.log("GAME OVER!");
+				var outString = "Results\nGame Name, Player 1 Score, Player 2 Score, Winner";
+				for (i = 0; i < miniGameResults.length; i++) {
+					outString += ("\n" + miniGameResults[i].getGameName() + ", " + miniGameResults[i].getPlayerOneScore() + "," +
+						miniGameResults[i].getPlayerTwoScore() + ", " + miniGameResults[i].getWinner());
+				}
+				alert(outString);
+			}
+
+			function determineGame(miniGames) {
+				var chosenGame = 0;
+				var validGame = false;
+				while (validGame == false) {
+					validGame = false;
+					chosenGame = Math.floor(Math.random() * miniGames.length);
+					var initialChosen = chosenGame;
+					while (validGame == false) {
+						if (miniGames[chosenGame] != "USEDGAME") {
+							validGame = true;
+							
+						} else {
+							
+							if (chosenGame >= miniGames.length) {
+								chosenGame = 0;
+							} else if (chosenGame = initialChosen) {
+								return -1;
+							}
+							chosenGame++;
+						}
+					}
+				}
+				console.log("Chose Game Number: "+chosenGame);
+				return chosenGame;
+			}
+
+			function runGameAsGuest(miniGame, conn) {
+				var miniGames = ["Game", "Game", "Game"];
+				if (miniGame == -1) {
+					displayResults();
+				} else {
+					runMiniGame(miniGames[miniGame], conn);
+				}
+			}
+
+			function runGameAsHost(numberRounds, conn) {
+				var miniGames = ["Game", "Game", "Game"];
+				var miniGameResults = new Array(miniGames.length);
+				for (i = 0; i < miniGames.length; i++) {
+					miniGameResults[i] = new GameResult(0, 0, "");
+				}
+				var playerNumber = -1;
+				var keepGoing = true;
+				var currentRound = 0;
+				var maxRounds = miniGames.length;
+				var keepGoing = true;
+				var chosenGame = 0;
+				for (i = 0; i < maxRounds; i++) {
+					console.log("Running Game Controller as host Round: " + i);
+					chosenGame = determineGame(miniGames)
+					
+					
+					if (chosenGame != -1) {
+						console.log("Sharing chosen game with peer");
+						conn.send(chosenGame);
+						miniGameResults[i] = runMiniGame(miniGames[chosenGame], conn);
+						miniGames[chosenGame] = "USEDGAME";
+					} else {
+						break;
+					}
+				}
+				conn.send(-1);
+				displayResults(miniGameResults);
+
+			}
+
+		});
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<style type="text/css">
+		table,
+		th,
+		td {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Game Lobby ----- USE MELON JS</h1>
+	<div id="gameTable">
+		<table>
+			<tr>
+				<th>Game Name</th>
+				<th>API Key</th>
+				<th>Enter Game P1</th>
+				<th>Enter Game P2</th>
+			</tr>
+			<tr>
+				<td class="gameNameTable">
+					Session 1
+				</td>
+				<td class="gameAPITable">
+					nzupjvjyjnx3l3di
+				</td>
+				<td>
+					<button id="nzupjvjyjnx3l3di1">Join Game as Player 1</button>
+				</td>
+				<td>
+					<button id="nzupjvjyjnx3l3di2">Join Game as Player 2</button>
+				</td>
+			</tr>
+			<tr>
+				<td class="gameNameTable">
+					Session 2
+				</td>
+				<td class="gameAPITable">
+					qtel6mk2t1chm2t9
+				</td>
+				<td>
+					<button id="qtel6mk2t1chm2t91">Join Game as Player 1</button>
+				</td>
+				<td>
+					<button id="qtel6mk2t1chm2t92">Join Game as Player 2</button>
+				</td>
+			</tr>
+			<tr>
+				<td class="gameNameTable">
+					Session 3
+				</td>
+				<td class="gameAPITable">
+					fq6a4niiuzkhuxr
+				</td>
+				<td>
+					<button id="fq6a4niiuzkhuxr1">Join Game as Player 1</button>
+				</td>
+				<td>
+					<button id="fq6a4niiuzkhuxr2">Join Game as Player 2</button>
+				</td>
+			</tr>
+			<tr>
+				<td class="gameNameTable">
+					Session 4
+				</td>
+				<td class="gameAPITable">
+					jml9r8bsz1714i
+				</td>
+				<td>
+					<button id="jml9r8bsz1714i1">Join Game as Player 1</button>
+				</td>
+				<td>
+					<button id="jml9r8bsz1714i2">Join Game as Player 2</button>
+				</td>
+			</tr>
+			<tr>
+				<td class="gameNameTable">
+					Session 5
+				</td>
+				<td class="gameAPITable">
+					fuszgluehi8p8pvi
+				</td>
+				<td>
+					<button id="fuszgluehi8p8pvi1">Join Game as Player 1</button>
+				</td>
+				<td>
+					<button id="fuszgluehi8p8pvi2">Join Game as Player 2</button>
+				</td>
+			</tr>
+			<tr>
+				<td class="gameNameTable">
+					Session 6
+				</td>
+				<td class="gameAPITable">
+					dvy4sjbvks79o1or
+				</td>
+				<td>
+					<button id="dvy4sjbvks79o1or1">Join Game as Player 1</button>
+				</td>
+				<td>
+					<button id="dvy4sjbvks79o1or2">Join Game as Player 2</button>
+				</td>
+			</tr>
+			<tr>
+				<td class="gameNameTable">
+					Session 6
+				</td>
+				<td class="gameAPITable">
+					l0wew8sguzo20529
+				</td>
+				<td>
+					<button id="l0wew8sguzo205291">Join Game as Player 1</button>
+				</td>
+				<td>
+					<button id="l0wew8sguzo205292">Join Game as Player 2</button>
+				</td>
+			</tr>
+			<tr>
+				<td class="gameNameTable">
+					Session 6
+				</td>
+				<td class="gameAPITable">
+					gx8uncxet3s1yvi
+				</td>
+				<td>
+					<button id="gx8uncxet3s1yvi1">Join Game as Player 1</button>
+				</td>
+				<td>
+					<button id="gx8uncxet3s1yvi2">Join Game as Player 2</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+
+</html>
