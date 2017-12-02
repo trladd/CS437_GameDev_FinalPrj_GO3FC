@@ -21,10 +21,17 @@
 	<script type "text/javascript" src="games/game/game.js"></script>
 	<script type "text/javascript" src="games/pong/pong.js"></script>
 	<script type "text/javascript" src="games/ticTacToe/ticTacToe.js"></script>
+	<script type "text/javascript" src="games/compBlock/compBlock.js"></script>
+	<script type "text/javascript" src="games/virtualDDR/virtualDDR.js"></script>
+	<script type "text/javascript" src="games/runningMan/runningMan.js"></script>
+	<script type "text/javascript" src="games/pastryPanic/pastryPanic.js"></script>
+	<script type "text/javascript" src="games/monsterBattle/monsterBattle.js"></script>
+	<script type "text/javascript" src="games/miniGolf/miniGolf.js"></script>
 
 
 	<script type="text/javascript">
 		$(document).ready(function () {
+			//Initial Jquery Statements to hide needed divs
 			$("#startGame").hide();
 			$("#pleaseWait").hide();
 			$("#waitingPeers").hide();
@@ -80,17 +87,6 @@
 				joinRoom("l0wew8sguzo20529");
 			});
 
-			//Define all games
-			/*To add a new game to this game controller....
-			-Add the game to the miniGames array
-			-Add under runGame the switchCase Statement
-				-create the game object and trigger the games main method
-				-save return data via the function "saveGameState"
-			*/
-			//ADD$GAMES$HERE
-
-			//["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
-			//"RunningMan", "VirtualDDR"
 
 			function runMiniGame(gameName, conn, miniGameResult) {
 				console.log("Searching to link game: " + gameName);
@@ -135,7 +131,6 @@
 				}
 				return miniGameResult;
 			}
-
 
 
 
