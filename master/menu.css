@@ -3,3 +3,16 @@ th,
 td {
     border: 1px solid black;
 }
+
+.game_DIV{
+    margin: 10px;
+    min-height: 500px;
+    min-width: 660px;
+    padding: 10px;
+    background-color: rgb(175, 140, 140);
+    border-radius: 30px;
+}
+
+.game_DIV h1{
+ text-align: center;
+}

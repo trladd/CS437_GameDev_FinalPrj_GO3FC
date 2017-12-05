@@ -69,12 +69,14 @@ function MiniGameName(conn, playerNumber) {
      * that the naming is not changed here. 
      */
     this.runGame = function () {
+        $("#game_game").slideDown(); //Displays your HTML pane
         console.log("Running Game" + this.gameName);
         while (this.keepGoing) {
             this.gameLoop();
         }
         console.log("Ending Game " + this.gameName);
         this.gameResults.setPlayerOneScore(76);
+        $("#game_game").slideUp();
         return this.gameResults;
     }
 }

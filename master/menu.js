@@ -14,6 +14,15 @@ $(document).ready(function () {
     $("#startGame").hide();
     $("#pleaseWait").hide();
     $("#waitingPeers").hide();
+    $("#game_compBlock").hide();
+    $("#game_game").hide();
+    $("#game_monsterBattle").hide();
+    $("#game_pastryPanic").hide();
+    $("#game_pong").hide();
+    $("#game_runningMan").hide();
+    $("#game_ticTacToe").hide();
+    $("#game_virtualDDR").hide();
+    $("#game_miniGolf").hide();
 
 
     //Define click events for clicking button to join Game
