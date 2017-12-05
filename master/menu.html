@@ -87,6 +87,91 @@
 				joinRoom("l0wew8sguzo20529");
 			});
 
+			/**Setup Connections
+			 * This method will handle setting up the connection object to run the required data receiving methods. This will require 
+			 * a common method of transmitting data across the project. To setup a data receiver, add a conn.on method or add to this
+			 * method that will work to receive an array of two objects (standard), or more objects (nonstandard). The important
+			 * part here is that data is sent as an array. The first array entry should be a string identifier for what the programmer
+			 * wants to happen when that data is received. Otherwise, setting up more than one data connection would duplicate and perform
+			 * more than the desired actions
+			 * 
+			 * Data connection format
+			 * 		data >>> ["String Identifier for Case break", DATAOBJECT_SENT]
+			 * 
+			 */
+			function setupConn(conn) {
+				var miniGameResults = new Array(50);
+				//for (i = 0; i < 50; i++) {
+				//	miniGameResults[i] = new GameResult(0, 0, "");
+				//}
+				conn.on('data', function (data) {
+					console.log("Received to Datacontroller: " + data[0]);
+					switch (data[0]) {
+						//Various Cases for the first element of data being passed 
+						case "#sendID_1":
+							console.log("Interpreted received data as #send_id");
+							break;
+
+							//Run game signal to player 2
+						case "#sendID_p1startGametop2":
+							conn.send("Player 2 Listener received message to run game");
+							$("#pleaseWait").slideUp();
+							runGameAsGuest(data, this.connection);
+							break;
+
+							//TestData - used to demonstrate the functionality of this
+						case "#test1":
+							alert("Test has been completed");
+							console.log("This is a test function and signals that a test connection has been attempted");
+							console.log(data[1]);
+							break;
+
+							//Used to listen on the player 2 side. Player one will call this data connection to signal the beginning
+							//of a new game. Player two will receive this and run that game. Note that the sync process will be ran
+							//in the beginning of the game. 
+
+						case "runP2game":
+							console.log("Player 2 listener has received a request to run a game " + data[1]);
+							$("#pleaseWait").slideUp();
+							//miniGameResults[i] = runMiniGame(data[1], conn);
+							break;
+
+
+							//This will signal the end of the game sequence to player 2. Player one will pass the existing game 
+							//results data to player 2;
+						case "signalP2end":
+							console.log("A signal has been received to end the game sequence");
+							//displayResults(miniGameResults);
+							break;
+
+
+							//End the current minigame to move on to other minigame or menu
+						case "signalP2gameOver":
+							console.log("A signal has been received to end the current minigame");
+							break;
+
+							//Signal from player 2 to player one which will send a welcome message initiating the game 
+						case "signalP1connected":
+							console.log("A message has been received from a joined player showing successful connection...\n" + data[1]);
+							$("#startGame").slideDown();
+							$("#startGame").click(function () {
+								$("#startGame").slideUp();
+								runGameAsHost(1, conn);
+							});
+							break;
+
+						default:
+							console.error(
+								"Data was sent to the data controller via conn.send, but there was no case setup to handle the data array identifier for data[0]. Ensure that you are sending data via an array where data[0] is a string identifier that has been defined in a data controller which will direct the data flow. "
+							);
+							console.error("Unhandled data[0] data: " + data[0]);
+							console.error("Unhandled data: " + data);
+					}
+
+				});
+				return conn;
+			}
+
 
 			function runMiniGame(gameName, conn, miniGameResult) {
 				console.log("Searching to link game: " + gameName);
@@ -156,20 +241,11 @@
 					$("#pleaseWait").slideDown();
 					$("#gameTable").slideUp();
 					console.log("Initiated Connection");
-					conn.send("I'm here and ready to play now");
+					conn.send(["signalP1connected", "I'm here and ready to play now"]);
 					this.connection = conn;
 					connected = true;
 					playerNumber = 2;
-					conn.on('data', function (data) {
-						conn.send("Player 2 Listener received message to run game");
-						$("#pleaseWait").slideUp();
-						runGameAsGuest(data, this.connection);
-					});
-
-				});
-
-				conn.on('data', function (data) {
-					console.log("Received Data: " + data);
+					conn = setupConn(conn);
 				});
 
 			}
@@ -185,17 +261,8 @@
 				});
 				console.log("Waiting for connection");
 				peer.on("connection", function (conn) {
-					conn.on('data', function (data) {
-						console.log("Received Data: ");
-						$("#startGame").slideDown();
-
-						$("#startGame").click(function () {
-							$("#startGame").slideUp();
-							conn.send("Let's play");
-							runGameAsHost(3, conn);
-						});
-
-					});
+					conn = setupConn(conn);
+					//Listening on 'signalP1connected'
 					playerNumber = 1;
 					console.log("Received Connection");
 				});
@@ -239,25 +306,11 @@
 				return chosenGame;
 			}
 
-			function runGameAsGuest(miniGame, connect) {
-				var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
-					"RunningMan", "VirtualDDR"
-				];
-				if (miniGame == -1) {
-					conn.on('data', function (data) {
-						console.log('Now Listening for Results Data: ', data);
-						displayResults(data);
-					});
-
-				} else {
-					runMiniGame(miniGames[miniGame], connect);
-				}
-			}
-
 			function runGameAsHost(numberRounds, conn) {
-				var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
-					"RunningMan", "VirtualDDR"
-				];
+				//var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
+				//	"RunningMan", "VirtualDDR"
+				//];
+				var miniGames = ["Game"];
 				var miniGameResults = new Array(miniGames.length);
 				for (i = 0; i < miniGames.length; i++) {
 					miniGameResults[i] = new GameResult(0, 0, "");
@@ -275,7 +328,7 @@
 
 					if (chosenGame != -1) {
 						console.log("Sharing chosen game with peer");
-						conn.send(chosenGame);
+						conn.send(["runP2game", miniGames[chosenGame]]);
 						miniGameResults[i] = runMiniGame(miniGames[chosenGame], conn);
 						miniGames[chosenGame] = "USEDGAME";
 					} else if (i >= maxRounds) {
@@ -284,10 +337,7 @@
 						i += 100;
 					}
 				}
-				conn.send(-1);
-				setTimeout(function () {
-					conn.send(miniGameResults);
-				}, 5000);
+				conn.send(["signalP2end", ""]);
 				displayResults(miniGameResults);
 
 			}
@@ -344,7 +394,7 @@
 					nzupjvjyjnx3l3di
 				</td>
 				<td>
-					<button id="nzupjvjyjnx3l3di1">Join Game as Player 1</button>
+					<button id="nzupjvjyjnx3l3di1">Create Game as Player 1</button>
 				</td>
 				<td>
 					<button id="nzupjvjyjnx3l3di2">Join Game as Player 2</button>
@@ -358,7 +408,7 @@
 					qtel6mk2t1chm2t9
 				</td>
 				<td>
-					<button id="qtel6mk2t1chm2t91">Join Game as Player 1</button>
+					<button id="qtel6mk2t1chm2t91">Create Game as Player 1</button>
 				</td>
 				<td>
 					<button id="qtel6mk2t1chm2t92">Join Game as Player 2</button>
@@ -372,7 +422,7 @@
 					fq6a4niiuzkhuxr
 				</td>
 				<td>
-					<button id="fq6a4niiuzkhuxr1">Join Game as Player 1</button>
+					<button id="fq6a4niiuzkhuxr1">Create Game as Player 1</button>
 				</td>
 				<td>
 					<button id="fq6a4niiuzkhuxr2">Join Game as Player 2</button>
@@ -386,7 +436,7 @@
 					jml9r8bsz1714i
 				</td>
 				<td>
-					<button id="jml9r8bsz1714i1">Join Game as Player 1</button>
+					<button id="jml9r8bsz1714i1">Create Game as Player 1</button>
 				</td>
 				<td>
 					<button id="jml9r8bsz1714i2">Join Game as Player 2</button>
@@ -400,7 +450,7 @@
 					fuszgluehi8p8pvi
 				</td>
 				<td>
-					<button id="fuszgluehi8p8pvi1">Join Game as Player 1</button>
+					<button id="fuszgluehi8p8pvi1">Create Game as Player 1</button>
 				</td>
 				<td>
 					<button id="fuszgluehi8p8pvi2">Join Game as Player 2</button>
@@ -414,7 +464,7 @@
 					dvy4sjbvks79o1or
 				</td>
 				<td>
-					<button id="dvy4sjbvks79o1or1">Join Game as Player 1</button>
+					<button id="dvy4sjbvks79o1or1">Create Game as Player 1</button>
 				</td>
 				<td>
 					<button id="dvy4sjbvks79o1or2">Join Game as Player 2</button>
@@ -422,13 +472,13 @@
 			</tr>
 			<tr>
 				<td class="gameNameTable">
-					Session 6
+					Session 7
 				</td>
 				<td class="gameAPITable">
 					l0wew8sguzo20529
 				</td>
 				<td>
-					<button id="l0wew8sguzo205291">Join Game as Player 1</button>
+					<button id="l0wew8sguzo205291">Create Game as Player 1</button>
 				</td>
 				<td>
 					<button id="l0wew8sguzo205292">Join Game as Player 2</button>
@@ -436,13 +486,13 @@
 			</tr>
 			<tr>
 				<td class="gameNameTable">
-					Session 6
+					Session 8
 				</td>
 				<td class="gameAPITable">
 					gx8uncxet3s1yvi
 				</td>
 				<td>
-					<button id="gx8uncxet3s1yvi1">Join Game as Player 1</button>
+					<button id="gx8uncxet3s1yvi1">Create Game as Player 1</button>
 				</td>
 				<td>
 					<button id="gx8uncxet3s1yvi2">Join Game as Player 2</button>
