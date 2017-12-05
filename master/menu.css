@@ -4,6 +4,17 @@ td {
     border: 1px solid black;
 }
 
+#game_ticTacToe_GameTable td{
+    width: 100px;
+    height: 100px;
+    background-color:white;
+
+}
+
+#game_ticTacToe_GameTable{
+    text-align: center;
+}
+
 .game_DIV{
     margin: 10px;
     min-height: 500px;
