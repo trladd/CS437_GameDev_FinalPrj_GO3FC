@@ -42,7 +42,6 @@ function HyperJumper(conn, playerNumber) {
      */
     this.gameLoop = function () {
 	var width = 90;
-var width = 90;
 var height = 20;
 var player;
 var x;
@@ -55,7 +54,7 @@ var platform;
 var platY;
 var platX;
 var platformArray;
-
+var myScore;
 
 init = function(){
 	var canvas = document.getElementById("game");
@@ -64,15 +63,36 @@ init = function(){
 	canvas.height = 640;
 	background = new Image();
 	background.src = "./images/css/Background_Clouds.png";
+	myScore = new component("30px", "Consolas", "black", 0, 600, "text");
 	Player();
 	Platform();
 }			
+function component(width, height, color, x, y, type) {
+  this.type = type;
+  this.width = width;
+  this.height = height;
+  this.speedX = 0;
+  this.speedY = 0; 
+  this.x = x;
+  this.y = y; 
+  this.update = function() {
+      if (this.type == "text") {
+      ctx.font = this.width + " " + this.height;
+      ctx.fillStyle = color;
+      ctx.fillText(this.text, this.x, this.y);
+    } else {
+      ctx.fillStyle = color;
+      ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+  }
 
+}
 Player = function(){
 	player = new Image();
 	player.src = "./images/player.png";
 	player.status = "jumping";
 	player.speed = 6;
+	player.maxY = 0;
 	player.update = function(){
 		
 		document.onkeydown = function(e) {
@@ -102,10 +122,12 @@ Player = function(){
 				
 			}
 			}
-			if (y > 580)
+			if (y > 640)
 			{
 			player.speed = 0;
-			
+			gravity = 0;
+			playermaxY = playermaxY + 1;
+			this.gameResult = new GameResult(playermaxY, 0, this.HyperJumper);
 			}
 			};		
 		player.speed -= gravity;
@@ -142,9 +164,12 @@ Platform = function(){
 			{
 			if (player.speed > 0){
 			platformArray[i].platY = platformArray[i].platY + player.speed;
+			player.maxY = player.maxY + player.speed;
 			}
 			if (player.speed <= 0){
 			platformArray[i].platY++;
+			player.maxY = player.maxY - 1;
+
 			}
 			if (platformArray[i].platY > 540 && y < 320)
 			{
@@ -162,7 +187,8 @@ Platform = function(){
 
 	function repeatOften() {
 	ctx.clearRect(0, 0, 480, 640);
-	
+	myScore.text = Math.floor(player.maxY);
+	myScore.update();
 	player.update();
 	player.checkCollision();
 	platformArray.update();
@@ -171,6 +197,9 @@ Platform = function(){
 	}
 requestAnimationFrame(repeatOften);
 
+	
+	
+	
 	
 	
 	
