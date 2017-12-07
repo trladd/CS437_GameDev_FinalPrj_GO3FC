@@ -24,6 +24,13 @@ $(document).ready(function () {
     $("#game_virtualDDR").hide();
     $("#game_miniGolf").hide();
 
+    var roundKeeper = 0;
+    var gameRounds = 2;
+    //var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
+    //"RunningMan", "VirtualDDR"
+    //];
+    var miniGames = ["TicTacToe"];
+    var globalConn;
 
     //Define click events for clicking button to join Game
     $("#nzupjvjyjnx3l3di1").click(function () {
@@ -104,7 +111,7 @@ $(document).ready(function () {
                 case "#sendID_p1startGametop2":
                     conn.send("Player 2 Listener received message to run game");
                     $("#pleaseWait").slideUp();
-                    runGameAsGuest(data, this.connection);
+                    
                     break;
 
                     //TestData - used to demonstrate the functionality of this
@@ -121,6 +128,7 @@ $(document).ready(function () {
                 case "runP2game":
                     console.log("Player 2 listener has received a request to run a game " + data[1]);
                     $("#pleaseWait").slideUp();
+                    runMiniGame(data[1], globalConn, miniGameResults);
                     //miniGameResults[i] = runMiniGame(data[1], conn);
                     break;
 
@@ -238,6 +246,7 @@ $(document).ready(function () {
             $("#pleaseWait").slideDown();
             $("#gameTable").slideUp();
             console.log("Initiated Connection");
+            globalConn = conn;
             conn.send(["signalP1connected", "I'm here and ready to play now"]);
             this.connection = conn;
             connected = true;
@@ -266,6 +275,7 @@ $(document).ready(function () {
         console.log("Waiting for connection");
         peer.on("connection", function (conn) {
             conn = setupConn(conn);
+            globalConn = conn;
             //Listening on 'signalP1connected'
             playerNumber = 1;
             console.log("Received Connection");
@@ -315,6 +325,33 @@ $(document).ready(function () {
         return chosenGame;
     }
 
+    function miniGameReturnAction(gmRs) {
+        miniGameResults[roundKeeper] = gmRs;
+        runGameRound();
+    }
+
+    function endGames() {
+        globalConn.send(["signalP2end", ""]);
+        displayResults(miniGameResults);
+    }
+
+    function runGameRound() {
+        console.log("Running Game Controller as host Round: " + i);
+        chosenGame = determineGame(miniGames)
+
+
+        if (chosenGame != -1) {
+            console.log("Sharing chosen game with peer");
+            globalConn.send(["runP2game", miniGames[chosenGame]]);
+            alert("test");
+            runMiniGame(miniGames[chosenGame], globalConn);
+            miniGames[chosenGame] = "USEDGAME";
+        } else if (i >= gameRounds) {
+            endGames();
+        } else {
+            endGames();
+        }
+    }
     /**Run Game as host
      * 
      * This method may be thought to be the main method of the game. This works by running player one as a server
@@ -325,9 +362,10 @@ $(document).ready(function () {
      * @param {*} conn 
      */
     function runGameAsHost(numberRounds, conn) {
-        var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
-            "RunningMan", "VirtualDDR"
-        ];
+        //var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
+        //"RunningMan", "VirtualDDR"
+        //];
+        var miniGames = ["TicTacToe"];
         //var miniGames = ["Game"];
         var miniGameResults = new Array(miniGames.length);
         for (i = 0; i < miniGames.length; i++) {
@@ -335,28 +373,11 @@ $(document).ready(function () {
         }
         var playerNumber = -1;
         var keepGoing = true;
-        var currentRound = 0;
+        var roundKeeper = 0;
         var maxRounds = miniGames.length;
         var keepGoing = true;
         var chosenGame = 0;
-        for (i = 0; i < numberRounds; i++) {
-            console.log("Running Game Controller as host Round: " + i);
-            chosenGame = determineGame(miniGames)
-
-
-            if (chosenGame != -1) {
-                console.log("Sharing chosen game with peer");
-                conn.send(["runP2game", miniGames[chosenGame]]);
-                miniGameResults[i] = runMiniGame(miniGames[chosenGame], conn);
-                miniGames[chosenGame] = "USEDGAME";
-            } else if (i >= maxRounds) {
-                i += 100;
-            } else {
-                i += 100;
-            }
-        }
-        conn.send(["signalP2end", ""]);
-        displayResults(miniGameResults);
+        runGameRound();
 
     }
 
