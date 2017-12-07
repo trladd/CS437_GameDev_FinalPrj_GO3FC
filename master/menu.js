@@ -29,7 +29,7 @@ $(document).ready(function () {
     //var miniGames = ["TicTacToe", "Pong", "Game", "CompBlock", "MiniGolf", "MonsterBattle", "PastryPanic",
     //"RunningMan", "VirtualDDR"
     //];
-    var miniGames = ["TicTacToe"];
+    var miniGames = ["Pong","TicTacToe"];
     var globalConn;
 
     //Define click events for clicking button to join Game

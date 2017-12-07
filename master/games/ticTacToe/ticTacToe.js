@@ -37,15 +37,15 @@ function TicTacToe(conn, playerNumber) {
      * runClick
      * Handles what happens when a player clicks on a square area
      */
-    this.runClick = function (xCoord, yCoord, playerNumber) {
-        console.log("Turn" + this.isTurn);
-        if (this.isTurn == true && this.gameBoard[xCoord][yCoord]) {
+    runClick = function (xCoord, yCoord, obj) {
+        console.log("Turn" + obj.isTurn);
+        if (obj.isTurn == true && obj.gameBoard[xCoord][yCoord]) {
 
-            this.isTurn = false;
-            this.gameBoard[xCoord, yCoord] = this.playerNumber;
-            conn.send(["ticTacToe_makeTurn", xCoord, yCoord, this.playerNumber]);
+            obj.isTurn = false;
+            obj.gameBoard[xCoord, yCoord] = obj.playerNumber;
+            conn.send(["ticTacToe_makeTurn", xCoord, yCoord, obj.playerNumber]);
         } else {
-            console.log("Player " + this.playerNumber + " has attempted to play off their turn");
+            console.log("Player " + obj.playerNumber + " has attempted to play off their turn");
         }
     }
 
@@ -157,31 +157,31 @@ function TicTacToe(conn, playerNumber) {
     }
 
     $("#game_ticTacToe_11").click(function () {
-        this.runClick(1, 1, this.playerNumber)
+        runClick(1, 1, this)
     });
     $("#game_ticTacToe_12").click(function () {
-        runClick(1, 2, this.playerNumber)
+        runClick(1, 2, this)
     });
     $("#game_ticTacToe_13").click(function () {
-        runClick(1, 3, this.playerNumber)
+        runClick(1, 3, this)
     });
     $("#game_ticTacToe_21").click(function () {
-        runClick(2, 1, this.playerNumber)
+        runClick(2, 1, this)
     });
     $("#game_ticTacToe_22").click(function () {
-        runClick(2, 2, this.playerNumber)
+        runClick(2, 2, this)
     });
     $("#game_ticTacToe_23").click(function () {
-        runClick(2, 3, this.playerNumber)
+        runClick(2, 3, this)
     });
     $("#game_ticTacToe_31").click(function () {
-        runClick(3, 1, this.playerNumber)
+        runClick(3, 1, this)
     });
     $("#game_ticTacToe_32").click(function () {
-        runClick(3, 2, this.playerNumber)
+        runClick(3, 2, this)
     });
     $("#game_ticTacToe_33").click(function () {
-        runClick(3, 3, this.playerNumber)
+        runClick(3, 3, this)
     });
 
 
