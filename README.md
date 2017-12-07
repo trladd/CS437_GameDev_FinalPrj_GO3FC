@@ -10,6 +10,5 @@
 	<li>Trevar Ladd</li>
 	<li>Madelyn O'Dell</li>
 	<li>Ernie Yarbrough</li>
-	<li>Jaclyn Schmitz</li>
 </ul>
 <b>Communication Means:</b> Group text message
