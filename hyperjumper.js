@@ -63,7 +63,7 @@ init = function(){
 	canvas.height = 640;
 	background = new Image();
 	background.src = "./images/css/Background_Clouds.png";
-	myScore = new component("30px", "Consolas", "black", 0, 600, "text");
+	myScore.playerNumber = new component("30px", "Consolas", "black", playerNumber * 100, 600, "text");
 	Player();
 	Platform();
 }			
@@ -187,7 +187,7 @@ Platform = function(){
 
 	function repeatOften() {
 	ctx.clearRect(0, 0, 480, 640);
-	myScore.text = Math.floor(player.maxY);
+	myScore.text = "Player 1: " + Math.floor(player.maxY) + "Player 2: " + 0;
 	myScore.update();
 	player.update();
 	player.checkCollision();
