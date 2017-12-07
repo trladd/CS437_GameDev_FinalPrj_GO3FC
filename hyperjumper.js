@@ -63,7 +63,7 @@ init = function(){
 	canvas.height = 640;
 	background = new Image();
 	background.src = "./images/css/Background_Clouds.png";
-	myScore.playerNumber = new component("30px", "Consolas", "black", playerNumber * 100, 600, "text");
+	myScore.playerNumber = new component("20px", "Consolas", "black", playerNumber * 100, 600, "text");
 	Player();
 	Platform();
 }			
