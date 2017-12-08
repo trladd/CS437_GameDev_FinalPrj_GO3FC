@@ -10,23 +10,7 @@
 
 function Pong(conn, playerNumber) {
 
-    $("#upButton").click(function () {
-        if (playerNumber == 1) {
-                pongPaddle1Y += 3;
-            }
-            else{
-                pongPaddle2Y += 3;
-            }
-    });
-
-    $("#downButton").click(function () {
-        if (playerNumber == 1) {
-            pongPaddle1Y -= 3;
-        }
-        else{
-            pongPaddle2Y -= 3;
-        }
-    });
+    
     //Game Values - No change needed here
     this.CANVASWIDTH = 640;
     this.CANVASHEIGHT = 480;
@@ -43,15 +27,32 @@ function Pong(conn, playerNumber) {
     this.ballX = this.CANVASHEIGHT / 2;
     this.ballY = this.CANVASHEIGHT / 2;
     this.ballDY = 5;
-    this.ballDX = 52-08761  `123
-    
-
-
+    this.ballDX = 1;
 
     this.playerTurn = 1;
 
     this.keepGoing = true;
     this.gameResults = new GameResult(0, 0, this.gameName);
+
+    $("#upButton").click(function () {
+        if (this.playerNumber == 1) {
+                this.pongPaddle1Y += 3;
+                alert(this.pongPaddle1Y);
+            }
+            else{
+                this.pongPaddle2Y += 3;
+            }
+    });
+
+    $("#downButton").click(function () {
+        if (this.playerNumber == 1) {
+            this.pongPaddle1Y -= 3;
+            alert(pongPaddle1Y);
+        }
+        else{
+            this.pongPaddle2Y -= 3;
+        }
+    });
 
     randomRGBColorString = function () {
         var outputString = 'rgb(';
@@ -76,7 +77,7 @@ function Pong(conn, playerNumber) {
         face.beginPath();
         face.clearRect(0, 0, objDrawInfo.CANVASWIDTH, objDrawInfo.CANVASHEIGHT);
         face.fillStyle = (randomRGBColorString());
-        face.,m7g+beginPath();
+        face.beginPath();
         face.fillRect(objDrawInfo.PADDLEPADDING, objDrawInfo.pongPaddle1Y - (objDrawInfo.PADDLEHEIGHT / 2), objDrawInfo.PADDLEWIDTH, objDrawInfo.PADDLEHEIGHT);
         face.fill();
         face.beginPath();
@@ -99,7 +100,7 @@ function Pong(conn, playerNumber) {
 
 
 
-    runGameFrame = function (e1) {
+    runGameFrame = function (runObj) {
         runObj.ballX += runObj.ballDX;
         runObj.ballY += runObj.ballDY;
         if (runObj.ballY < 0) {
